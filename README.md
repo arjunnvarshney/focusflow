@@ -79,4 +79,3 @@ npm run dev
 ## 📎 Portfolio Context
 FocusFlow was built to demonstrate architectural proficiency in **Full-Stack Engineering**, **State Management**, and **AI System Integration**. It focuses on solving the problem of "Attention Residue" through behavioral quantification.
 
-Developed by **Arjun Varshney**.
