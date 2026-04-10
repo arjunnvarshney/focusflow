@@ -1,77 +1,82 @@
-# FocusFlow
+# FocusFlow 🧠
 
-FocusFlow is a full-stack focus session tracker that detects distractions, scores your focus, and provides an AI-generated summary after every session. It's built to actually help you focus by holding you accountable and surfacing tasks that you repeatedly fail to complete.
+**Intelligent Productivity Engine with Real-Time Distraction Detection & AI Post-Mortems.**
 
-## Problem Statement
+FocusFlow is a professional-grade productivity suite designed for developers. It transcends traditional Pomodoro timers by actively monitoring user behavior, quantifying deep work through a biological state machine, and leveraging Large Language Models to generate predictive performance insights.
 
-*I always start a focus block intending to work on one thing, but quickly find myself checking other tabs, going idle, or getting distracted. I needed a tool that acts like a strict accountability partner, scores my focus based on actual behavior (tab switches and idling), and uses AI to give me actionable feedback at the end. FocusFlow tracks my distractions in real-time, penalizes my score, and forces me to confront tasks I keep avoiding.*
+---
 
-## Tech Stack
+## 🚀 Key Features
 
-**Backend**: Python, FastAPI, SQLAlchemy, SQLite
-**Frontend**: React (Vite), Tailwind CSS, Recharts, Axios
-**AI**: Anthropic Claude API
+### 📡 Real-Time Distraction Engine
+A high-frequency monitoring system that tracks:
+*   **Tab Switching:** Instant detection of context switching using the Page Visibility API.
+*   **Idle Detection:** Automated tracking of inactivity via DOM event listeners.
+*   **Biological State Machine:** Tracks transitions between `ACTIVE`, `DISTRACTED`, and `RECOVERING` states to calculate real-time Focus Scores.
 
-## State Machine Architecture
+### 🤖 AI Post-Session Post-Mortems
+Upon session completion, the system aggregates tracking data and proxies it to an LLM (Claude/Llama) to generate:
+*   **Actionable Feedback:** Identifying specific failure points and behavioral trends.
+*   **Predictive Insights:** Suggestions for optimizing future focus blocks based on distraction history.
 
-The focus engine relies on a state machine to accurately track when you are distracted during a session without double-penalizing for continued distraction.
+### 🔄 Intelligent Task Resurfacing
+A persistence layer that tracks task abandonment. Tasks that are consistently neglected across multiple sessions are algorithmically flagged and resurfaced with high-priority visual markers.
+
+### 🛠 Automated System Log
+A real-time, immutable event log that records every architectural state transition and system event with precision timestamps.
+
+---
+
+## 🏗 Technical Architecture
+
+### Tech Stack
+*   **Frontend:** React (Vite), Custom Brutalist UI, `useNavigate` Routing, `DM Mono` Typography.
+*   **Backend:** Python (FastAPI), High-performance Asynchronous Routing.
+*   **Persistence:** SQLite with SQLAlchemy ORM.
+*   **AI Overlay:** Anthropic API / Groq Inference.
+
+### State Diagram
+The engine utilizes a robust transition model to handle user behavior without redundant penalties:
 
 ```mermaid
 stateDiagram-v2
     [*] --> IDLE : end_session()
     IDLE --> ACTIVE : start_session()
-    ACTIVE --> DISTRACTED : tab_switch / idle\n[count += 1]
-    DISTRACTED --> DISTRACTED : tab_switch / idle
+    ACTIVE --> DISTRACTED : tab_switch / idle
     DISTRACTED --> RECOVERING : resume
-    RECOVERING --> DISTRACTED : tab_switch / idle\n[count += 1]
-    RECOVERING --> ACTIVE : resume
-    
+    RECOVERING --> ACTIVE : focus_maintained
+    RECOVERING --> DISTRACTED : slip_up
     ACTIVE --> IDLE : end_session()
-    DISTRACTED --> IDLE : end_session()
-    RECOVERING --> IDLE : end_session()
 ```
 
-- When you start a session, it goes from `IDLE` to `ACTIVE`.
-- If you switch tabs or go idle (>2 mins), you enter `DISTRACTED` and your distraction count goes up.
-- If you resume focus, you enter `RECOVERING`. You must stay focused to return to `ACTIVE`.
-- If you slip up again while `RECOVERING`, your distraction count goes up again.
+---
 
-## How to Run Locally
+## 🛠 Setup & Installation
 
-### 1. Backend Setup
-
-```bash
-cd backend
-python -m venv venv
-
-# Windows
-.\venv\Scripts\activate
-# Mac/Linux
-source venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-Create a `.env` file in the `backend` directory and add your Anthropic API key:
+### 1. External Engine Configuration
+Create `backend/.env` with your LLM credentials:
 ```env
 ANTHROPIC_API_KEY=your_key_here
 ```
 
-Run the FastAPI server:
-```bash
+### 2. Native Environment Setup
+```powershell
+# Backend
+cd backend
+python -m venv venv
+.\venv\Scripts\activate # Windows
+pip install -r requirements.txt
 uvicorn main:app --reload
-```
-*The backend will run at http://localhost:8000*
 
-### 2. Frontend Setup
-
-```bash
+# Frontend
 cd frontend
 npm install
 npm run dev
 ```
-*The frontend will run at http://localhost:5173*
 
-## Screenshots
+---
 
-*(Insert screenshots of your dashboard and analytics here)*
+## 📎 Portfolio Context
+FocusFlow was built to demonstrate architectural proficiency in **Full-Stack Engineering**, **State Management**, and **AI System Integration**. It focuses on solving the problem of "Attention Residue" through behavioral quantification.
+
+Developed by **Arjun Varshney**.
