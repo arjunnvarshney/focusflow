@@ -309,16 +309,18 @@ export default function Home() {
           {xpPopups.map(p => (
             <motion.div
               key={p.id}
-              initial={{ opacity: 0, y: 0 }}
-              animate={{ opacity: 1, y: -100 }}
+              initial={{ opacity: 0, scale: 0.5, y: 0 }}
+              animate={{ opacity: 1, scale: 1, y: -120 }}
               style={{
                 position: "absolute",
-                top: "50%",
+                top: "75%",
                 left: `calc(50% + ${p.x}px)`,
                 color: THEMES[theme].primary,
-                fontWeight: 800,
-                fontSize: 24,
-                pointerEvents: "none"
+                fontWeight: 900,
+                fontSize: 28,
+                pointerEvents: "none",
+                textShadow: `0 0 20px ${THEMES[theme].primary}aa`,
+                zIndex: 100
               }}
             >+20 XP</motion.div>
           ))}
