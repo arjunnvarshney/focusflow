@@ -293,14 +293,13 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             key={mantra}
             style={{ 
-              position: "absolute", 
-              top: zenMode ? "15%" : "20%", 
-              left: zenMode ? "20%" : "80px",
               fontSize: 14, 
               color: "rgba(255,255,255,0.3)", 
               fontStyle: "italic", 
               letterSpacing: "0.5px",
-              fontWeight: 400
+              fontWeight: 400,
+              marginBottom: 24,
+              marginTop: zenMode ? -100 : 0 // Shift up slightly in Zen Mode
             }}
           >
             — {mantra}
