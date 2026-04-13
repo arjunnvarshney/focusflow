@@ -39,9 +39,9 @@ export default function Home() {
   const audioRef = useRef(null);
 
   const SOUND_URLS = {
-    LOFI: "https://stream.zeno.fm/0r0xa792kw9uv", // Lofi Radio stream or similar static MP3
-    RAIN: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", // Demo rain-like
-    JAZZ: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" // Demo jazz-like
+    LOFI: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    RAIN: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    JAZZ: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
   };
 
   // Audio Management
@@ -50,7 +50,7 @@ export default function Home() {
       if (!audioRef.current) {
         audioRef.current = new Audio(SOUND_URLS[soundType]);
         audioRef.current.loop = true;
-        audioRef.current.volume = 0.4;
+        audioRef.current.volume = 0.3;
       } else {
         audioRef.current.src = SOUND_URLS[soundType];
       }
@@ -58,8 +58,8 @@ export default function Home() {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          console.error("Audio playback failed:", error);
-          setSoundEnabled(false);
+          console.warn("Audio playback issue (User interaction may be required):", error);
+          // Do not setSoundEnabled(false) here, just log it.
         });
       }
     } else {
