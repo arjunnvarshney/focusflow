@@ -135,8 +135,45 @@ export default function Analytics() {
           </div>
         </motion.div>
 
+        {/* Badges & Achievements */}
+        <div style={{ marginTop: 64 }}>
+          <div style={{ fontSize: 11, letterSpacing: "2px", fontWeight: 800, color: "rgba(255,255,255,0.2)", marginBottom: 32 }}>EARNED ACHIEVEMENTS</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
+            {[
+              { id: "Early Bird", desc: "Session before 7 AM", icon: <Clock size={32} />, color: "#fb7185", earned: true },
+              { id: "Zen Master", desc: "2h+ without distractions", icon: <Target size={32} />, color: "#60a5fa", earned: true },
+              { id: "Resilience", desc: "Recovered from 5+ tabs", icon: <Flame size={32} />, color: "#fca5a5", earned: false },
+              { id: "Streak King", desc: "7 days in a row", icon: <Trophy size={32} />, color: "#fde047", earned: false }
+            ].map((badge, idx) => (
+              <motion.div
+                key={badge.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ y: -5, boxShadow: `0 10px 30px ${badge.color}22` }}
+                style={{
+                  background: badge.earned ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.01)",
+                  border: `1px solid ${badge.earned ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.02)"}`,
+                  padding: "32px 24px",
+                  borderRadius: 16,
+                  textAlign: "center",
+                  filter: badge.earned ? "none" : "grayscale(1) opacity(0.3)",
+                  position: "relative",
+                  overflow: "hidden"
+                }}
+              >
+                {badge.earned && (
+                   <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, background: `linear-gradient(225deg, ${badge.color}44 0%, transparent 70%)` }} />
+                )}
+                <div style={{ color: badge.earned ? badge.color : "#555", marginBottom: 16, display: "flex", justifyContent: "center" }}>{badge.icon}</div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: badge.earned ? "#fff" : "#444", marginBottom: 4 }}>{badge.id.toUpperCase()}</div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", fontWeight: 500 }}>{badge.desc}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* Charts */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, marginTop: 64 }}>
           <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "40px", borderRadius: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
               <Activity size={18} color="#6366f1" />

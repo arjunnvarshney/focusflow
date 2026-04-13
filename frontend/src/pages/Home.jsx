@@ -75,9 +75,25 @@ export default function Home() {
     };
   }, [soundEnabled, soundType]);
 
+  const [zenMode, setZenMode] = useState(false);
+  const [mantra, setMantra] = useState("Stay sharp. Stay focused.");
+
   const timerRef = useRef(null);
   const idleRef = useRef(null);
   const inputRef = useRef(null);
+
+  const MANTRAS = {
+    IDLE: ["Ready for deep work?", "Your next breakthrough awaits.", "Focus is a superpower."],
+    ACTIVE: ["You're in the flow.", "Deep work in progress.", "Quiet the noise. Focus on the craft."],
+    DISTRACTED: ["Breathe. Come back to center.", "The path is still there. Rejoin it.", "One small step back to focus."],
+    RECOVERING: ["Resetting neural pathways...", "Re-centering...", "Flow state returning..."]
+  };
+
+  useEffect(() => {
+    const pool = MANTRAS[focusState];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    setMantra(pick);
+  }, [focusState]);
 
   const logEvent = useCallback((type) => {
     const now = new Date();
@@ -207,20 +223,59 @@ export default function Home() {
       overflow: "hidden",
     }}>
       <ParticleBackground />
-      <Navbar />
+      {!zenMode && <Navbar />}
+
+      {/* Zen Mode Toggle */}
+      <div style={{ position: "fixed", top: 24, left: 24, zIndex: 1000, display: "flex", alignItems: "center", gap: 16 }}>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setZenMode(!zenMode)}
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", color: zenMode ? "#6366f1" : "rgba(255,255,255,0.4)", cursor: "pointer", backdropFilter: "blur(10px)" }}
+        >
+          {zenMode ? <Sparkles size={20} /> : <Zap size={20} />}
+        </motion.button>
+        {zenMode && <div style={{ fontSize: 10, letterSpacing: "2px", fontWeight: 800, color: "rgba(255,255,255,0.2)" }}>ZEN MODE ACTIVE</div>}
+      </div>
 
       {/* Main Body */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 440px", flex: 1, minHeight: 0, zIndex: 10 }}>
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: zenMode ? "1fr" : "1fr 440px", 
+        flex: 1, 
+        minHeight: 0, 
+        zIndex: 10,
+        transition: "grid-template-columns 0.6s cubic-bezier(0.16, 1, 0.3, 1)"
+      }}>
         
         {/* Left Section */}
         <div style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "0 80px",
-          borderRight: "1px solid rgba(255,255,255,0.04)",
-          position: "relative"
+          padding: zenMode ? "0 20%" : "0 80px",
+          borderRight: zenMode ? "none" : "1px solid rgba(255,255,255,0.04)",
+          position: "relative",
+          transition: "padding 0.6s cubic-bezier(0.16, 1, 0.3, 1)"
         }}>
+          {/* AI Focus Coach Mantra */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            key={mantra}
+            style={{ 
+              position: "absolute", 
+              top: zenMode ? "15%" : "20%", 
+              left: zenMode ? "20%" : "80px",
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.3)", 
+              fontStyle: "italic", 
+              letterSpacing: "0.5px",
+              fontWeight: 400
+            }}
+          >
+            — {mantra}
+          </motion.div>
           {/* XP Popups */}
           {xpPopups.map(p => (
             <motion.div
@@ -284,81 +339,91 @@ export default function Home() {
         </div>
 
         {/* Right Section */}
-        <div style={{ display: "flex", flexDirection: "column", background: "rgba(8,8,8,0.4)", backdropFilter: "blur(40px)" }}>
-          
-          {/* Sounds */}
-          <div style={{ padding: "32px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ display: "flex", gap: 16 }}>
-              <motion.button 
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                style={{ background: "none", border: "none", color: soundEnabled ? "#6366f1" : "rgba(255,255,255,0.2)", cursor: "pointer" }}
-              >
-                {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-              </motion.button>
-              {soundEnabled && (
-                <div style={{ display: "flex", gap: 8 }}>
-                  {["LOFI", "RAIN", "JAZZ"].map(s => (
-                    <span key={s} onClick={() => setSoundType(s)} style={{ fontSize: 10, fontWeight: 800, letterSpacing: "1px", color: soundType === s ? "#fff" : "rgba(255,255,255,0.2)", cursor: "pointer", padding: "4px 8px", background: soundType === s ? "rgba(99,102,241,0.1)" : "transparent", borderRadius: 4 }}>{s}</span>
+        <AnimatePresence>
+          {!zenMode && (
+            <motion.div 
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              style={{ display: "flex", flexDirection: "column", background: "rgba(8,8,8,0.4)", backdropFilter: "blur(40px)" }}
+            >
+              
+              {/* Sounds */}
+              <div style={{ padding: "32px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 16 }}>
+                  <motion.button 
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setSoundEnabled(!soundEnabled)}
+                    style={{ background: "none", border: "none", color: soundEnabled ? "#6366f1" : "rgba(255,255,255,0.2)", cursor: "pointer" }}
+                  >
+                    {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                  </motion.button>
+                  {soundEnabled && (
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {["LOFI", "RAIN", "JAZZ"].map(s => (
+                        <span key={s} onClick={() => setSoundType(s)} style={{ fontSize: 10, fontWeight: 800, letterSpacing: "1px", color: soundType === s ? "#fff" : "rgba(255,255,255,0.2)", cursor: "pointer", padding: "4px 8px", background: soundType === s ? "rgba(99,102,241,0.1)" : "transparent", borderRadius: 4 }}>{s}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 4, display: "flex", alignItems: "center", gap: 6 }}>
+                  <Sparkles size={12} /> XP SYSTEM ACTIVE
+                </div>
+              </div>
+
+              {/* Tasks */}
+              <div style={{ padding: "32px", flex: 1, overflowY: "auto" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "2.5px", color: "rgba(255,255,255,0.2)", marginBottom: 24 }}>PRIORITY QUEUE</div>
+                <div style={{ display: "flex", gap: 10, marginBottom: 32 }}>
+                  <input
+                    ref={inputRef}
+                    value={taskInput}
+                    onChange={(e) => setTaskInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && addTask()}
+                    placeholder="Next objective... (Alt+T)"
+                    style={{ flex: 1, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, padding: "16px 20px", fontSize: 14, color: "#fff", outline: "none" }}
+                  />
+                  <button onClick={addTask} style={{ background: "#6366f1", border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer" }}><Plus size={20} /></button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <AnimatePresence mode="popLayout">
+                    {tasks.map((t) => (
+                      <motion.div
+                        key={t.id}
+                        layout
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        onClick={() => toggleTask(t.id)}
+                        style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: t.done ? "transparent" : "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: 6, cursor: "pointer" }}
+                      >
+                        <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? "#6366f1" : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: t.done ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)", flex: 1, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div style={{ padding: "32px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  {[
+                    { label: "SESSION XP", value: "+140", icon: <Sparkles size={14} /> },
+                    { label: "TIME WORKED", value: fmt(seconds), icon: <Clock size={14} /> },
+                  ].map((s) => (
+                    <div key={s.label}>
+                      <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{s.value}</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "1.5px", color: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", gap: 6 }}>{s.icon} {s.label}</div>
+                    </div>
                   ))}
                 </div>
-              )}
-            </div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 4, display: "flex", alignItems: "center", gap: 6 }}>
-              <Sparkles size={12} /> XP SYSTEM ACTIVE
-            </div>
-          </div>
-
-          {/* Tasks */}
-          <div style={{ padding: "32px", flex: 1, overflowY: "auto" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "2.5px", color: "rgba(255,255,255,0.2)", marginBottom: 24 }}>PRIORITY QUEUE</div>
-            <div style={{ display: "flex", gap: 10, marginBottom: 32 }}>
-              <input
-                ref={inputRef}
-                value={taskInput}
-                onChange={(e) => setTaskInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && addTask()}
-                placeholder="Next objective... (Alt+T)"
-                style={{ flex: 1, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, padding: "16px 20px", fontSize: 14, color: "#fff", outline: "none" }}
-              />
-              <button onClick={addTask} style={{ background: "#6366f1", border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer" }}><Plus size={20} /></button>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <AnimatePresence mode="popLayout">
-                {tasks.map((t) => (
-                  <motion.div
-                    key={t.id}
-                    layout
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    onClick={() => toggleTask(t.id)}
-                    style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: t.done ? "transparent" : "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: 6, cursor: "pointer" }}
-                  >
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? "#6366f1" : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: t.done ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)", flex: 1, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div style={{ padding: "32px", background: "rgba(255,255,255,0.02)", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              {[
-                { label: "SESSION XP", value: "+140", icon: <Sparkles size={14} /> },
-                { label: "TIME WORKED", value: fmt(seconds), icon: <Clock size={14} /> },
-              ].map((s) => (
-                <div key={s.label}>
-                  <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{s.value}</div>
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "1.5px", color: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", gap: 6 }}>{s.icon} {s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
