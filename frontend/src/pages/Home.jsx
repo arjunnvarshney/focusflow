@@ -265,8 +265,8 @@ export default function Home() {
       <ParticleBackground color={THEMES[theme].primary} />
       {!zenMode && <Navbar />}
 
-      {/* Control Area: Zen & Themes */}
-      <div style={{ position: "fixed", top: 24, left: 24, zIndex: 1000, display: "flex", alignItems: "center", gap: 20 }}>
+      {/* Control Area: Zen & Themes - Repositioned to avoid Navbar overlap */}
+      <div style={{ position: "fixed", top: 110, left: 24, zIndex: 1000, display: "flex", alignItems: "center", gap: 20 }}>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
