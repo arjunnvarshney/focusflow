@@ -395,7 +395,7 @@ export default function Home() {
 
           <motion.div 
             animate={{ color: sc.text, backgroundColor: sc.bg, borderColor: `${sc.text}33` }}
-            style={{ fontSize: 11, letterSpacing: "4px", border: "1px solid", padding: "10px 24px", borderRadius: 3, marginBottom: 48, fontWeight: 800, alignSelf: "flex-start" }}
+            style={{ fontSize: 11, letterSpacing: "4px", border: "1px solid", padding: "10px 24px", borderRadius: 3, marginBottom: 32, fontWeight: 800, alignSelf: "flex-start" }}
           >{focusState}</motion.div>
 
           <AnimatePresence mode="wait">
@@ -404,18 +404,18 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.02 }}
-              style={{ fontSize: "clamp(120px, 15vw, 200px)", fontWeight: 800, letterSpacing: "-10px", lineHeight: 0.9, color: isRunning ? "#fff" : "rgba(255,255,255,0.1)", fontVariantNumeric: "tabular-nums", marginBottom: 56 }}
+              style={{ fontSize: "clamp(100px, 12vw, 180px)", fontWeight: 800, letterSpacing: "-8px", lineHeight: 0.9, color: isRunning ? "#fff" : "rgba(255,255,255,0.1)", fontVariantNumeric: "tabular-nums", marginBottom: 40 }}
             >{fmt(seconds)}</motion.div>
           </AnimatePresence>
 
-          <div style={{ display: "flex", gap: 64, marginBottom: 64 }}>
+          <div style={{ display: "flex", gap: 64, marginBottom: 48 }}>
             {[
               { label: "QUALITY", value: isRunning ? `${focusScore}%` : "—", color: focusScore < 60 ? "#ef4444" : THEMES[theme].primary, icon: <Zap size={16} /> },
               { label: "DISTRACTIONS", value: isRunning ? `${distractions}` : "—", color: distractions > 2 ? "#f59e0b" : "#fff", icon: <Keyboard size={16} /> },
             ].map((s) => (
               <div key={s.label}>
                 <div style={{ fontSize: 10, letterSpacing: "2px", color: "rgba(255,255,255,0.2)", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>{s.icon} {s.label}</div>
-                <div style={{ fontSize: 48, fontWeight: 700, color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: 44, fontWeight: 700, color: s.color }}>{s.value}</div>
               </div>
             ))}
           </div>
@@ -425,7 +425,7 @@ export default function Home() {
               whileHover={{ scale: 1.02, backgroundColor: isRunning ? "rgba(239,68,68,0.1)" : THEMES[theme].accent }}
               whileTap={{ scale: 0.98 }}
               onClick={isRunning ? endSession : startSession}
-              style={{ background: isRunning ? "transparent" : THEMES[theme].primary, color: isRunning ? "#ef4444" : "#fff", border: isRunning ? "1px solid rgba(239,68,68,0.3)" : "none", padding: "20px 56px", borderRadius: 4, fontSize: 14, fontWeight: 700, letterSpacing: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: 16 }}
+              style={{ background: isRunning ? "transparent" : THEMES[theme].primary, color: isRunning ? "#ef4444" : "#fff", border: isRunning ? "1px solid rgba(239,68,68,0.3)" : "none", padding: "18px 52px", borderRadius: 4, fontSize: 14, fontWeight: 700, letterSpacing: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: 16 }}
             >
               {isRunning ? <Square size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
               {isRunning ? "DEACTIVATE" : "INITIATE FOCUS"}
@@ -483,7 +483,7 @@ export default function Home() {
                     placeholder="Next objective... (Alt+T)"
                     style={{ flex: 1, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, padding: "16px 20px", fontSize: 14, color: "#fff", outline: "none" }}
                   />
-                  <button onClick={addTask} style={{ background: THEMES[theme].primary, border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer" }}><Plus size={20} /></button>
+                  <button onClick={addTask} style={{ background: THEMES[theme].primary, border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={20} /></button>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
