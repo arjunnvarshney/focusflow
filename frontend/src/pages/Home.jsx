@@ -103,13 +103,15 @@ export default function Home() {
   const breakTask = (id) => {
     setTasks(prev => {
       const task = prev.find(t => t.id === id);
-      if (!task) return prev;
+      if (!task || task.isBroken) return prev;
+      
       const subs = [
-        { id: Date.now() + 1, text: `→ Plan: ${task.text.split(' ')[0]} specifics`, done: false },
-        { id: Date.now() + 2, text: `→ Execute core logic`, done: false },
-        { id: Date.now() + 3, text: `→ Review and polish`, done: false }
+        { id: Date.now() + 1, text: `→ Stage 1: Initial setup & planning`, done: false },
+        { id: Date.now() + 2, text: `→ Stage 2: Deep execution phase`, done: false },
+        { id: Date.now() + 3, text: `→ Stage 3: Quality audit & cleanup`, done: false }
       ];
-      return prev.flatMap(t => t.id === id ? [t, ...subs] : t);
+      
+      return prev.flatMap(t => t.id === id ? [{ ...t, isBroken: true }, ...subs] : t);
     });
   };
 
@@ -498,7 +500,7 @@ export default function Home() {
                       >
                         <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? THEMES[theme].primary : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
                         <span style={{ fontSize: 14, fontWeight: 500, color: t.done ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)", flex: 1, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
-                        {!t.done && (
+                        {!t.done && !t.isBroken && (
                           <motion.button
                             whileHover={{ scale: 1.2, color: THEMES[theme].primary }}
                             onClick={(e) => { e.stopPropagation(); breakTask(t.id); }}
