@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import Navbar from '../components/Navbar';
-import { Flame, Clock, Trophy } from 'lucide-react';
+import ParticleBackground from '../components/ParticleBackground';
+import { Flame, Clock, Trophy, Zap, Activity, Target } from 'lucide-react';
 
 const API_URL = 'http://localhost:8000';
 
@@ -11,7 +13,6 @@ export default function Analytics() {
   const [heatmapData, setHeatmapData] = useState([]);
   const [streak, setStreak] = useState(0);
   const [bestHour, setBestHour] = useState({ hour: 'N/A', score: 0 });
-
   const [gamification, setGamification] = useState({ xp: 0, level: 1, rank: 'Novice', next_level_xp: 100, progress: 0 });
 
   useEffect(() => {
@@ -38,102 +39,139 @@ export default function Analytics() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div style={{
+      background: "#050505",
+      minHeight: "100vh",
+      color: "#fff",
+      fontFamily: "'DM Mono', monospace",
+      display: "flex",
+      flexDirection: "column",
+      overflowX: "hidden"
+    }}>
+      <ParticleBackground />
       <Navbar />
-      <main className="flex-1 max-w-6xl w-full mx-auto p-6 md:p-8 space-y-8">
-        <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-surface border border-white/5 p-6 rounded-3xl flex items-center gap-6 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-orange-500/20 text-orange-500 flex items-center justify-center flex-shrink-0">
-              <Flame size={32} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-1">Current Streak</div>
-              <div className="text-3xl font-black">{streak} Day{streak !== 1 ? 's' : ''}</div>
-            </div>
-          </div>
-          
-          <div className="bg-surface border border-white/5 p-6 rounded-3xl flex items-center gap-6 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center flex-shrink-0">
-              <Trophy size={32} />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-1">Best Focus Hour</div>
-              <div className="text-3xl font-black">{bestHour.hour}</div>
-              <div className="text-xs text-indigo-400 font-medium mt-1">Avg Score: {bestHour.score}</div>
-            </div>
-          </div>
 
-          <div className="bg-surface border border-white/5 p-6 rounded-3xl flex flex-col justify-center gap-2 shadow-xl md:col-span-2 lg:col-span-1">
-            <div className="flex justify-between items-end mb-1">
+      <main style={{ 
+        flex: 1, 
+        maxWidth: "1200px", 
+        width: "100%", 
+        margin: "0 auto", 
+        padding: "64px 48px", 
+        zIndex: 10,
+        position: "relative"
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginBottom: 64 }}
+        >
+          <div style={{ fontSize: 11, letterSpacing: "5px", color: "rgba(255,255,255,0.2)", fontWeight: 800, marginBottom: 16 }}>COGNITIVE PERFORMANCE</div>
+          <h1 style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-2px" }}>Analytics Engine</h1>
+        </motion.div>
+        
+        {/* Top Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginBottom: 48 }}>
+          {[
+            { label: "FOCUS STREAK", value: `${streak} DAYS`, icon: <Flame size={24} />, color: "#f59e0b" },
+            { label: "PEAK EFFICIENCY", value: bestHour.hour, icon: <Zap size={24} />, color: "#6366f1", sub: `Score: ${bestHour.score}` },
+            { label: "CURRENT RANK", value: gamification.rank, icon: <Trophy size={24} />, color: "#22c55e", sub: `LEVEL ${gamification.level}` }
+          ].map((card, i) => (
+            <motion.div 
+              key={card.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.04)",
+                padding: "32px",
+                borderRadius: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                backdropFilter: "blur(10px)"
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div style={{ color: card.color }}>{card.icon}</div>
+                <div style={{ fontSize: 10, letterSpacing: "2px", fontWeight: 800, color: "rgba(255,255,255,0.2)" }}>{card.label}</div>
+              </div>
               <div>
-                <div className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-1">Focus Rank: {gamification.rank}</div>
-                <div className="text-3xl font-black">Level {gamification.level}</div>
+                <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-1px" }}>{card.value}</div>
+                {card.sub && <div style={{ fontSize: 12, color: card.color, fontWeight: 700, marginTop: 4 }}>{card.sub}</div>}
               </div>
-              <div className="text-xs text-purple-400 font-bold bg-purple-500/10 px-2 py-1 rounded-lg">
-                {gamification.xp} XP
-              </div>
-            </div>
-            
-            <div className="w-full bg-white/5 rounded-full h-3 mt-2 overflow-hidden border border-white/5">
-              <div 
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-1000 ease-out" 
-                style={{ width: `${gamification.progress}%` }}
-              ></div>
-            </div>
-            <div className="text-[10px] text-white/40 text-right font-bold tracking-wider mt-1">
-              {gamification.next_level_xp - gamification.xp} XP TO NEXT LEVEL
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-surface border border-white/5 p-8 rounded-3xl shadow-xl">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              Focus Score Trend
-              <span className="text-sm font-medium text-white/40 block ml-auto">Last 7 Days</span>
-            </h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={dailyData}>
-                  <XAxis dataKey="date" stroke="#ffffff40" fontSize={12} tickMargin={10} axisLine={false} tickLine={false} />
-                  <YAxis stroke="#ffffff40" fontSize={12} tickMargin={10} axisLine={false} tickLine={false} domain={[0, 100]} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1e1e1e', borderColor: '#ffffff1a', borderRadius: '12px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="score" 
-                    stroke="#6366f1" 
-                    strokeWidth={4}
-                    dot={{ fill: '#1e1e1e', stroke: '#6366f1', strokeWidth: 3, r: 6 }} 
-                    activeDot={{ r: 8, strokeWidth: 0, fill: '#818cf8' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+        {/* LVL Progress */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          style={{
+            background: "rgba(99,102,241,0.02)",
+            border: "1px solid rgba(99,102,241,0.1)",
+            padding: "32px",
+            borderRadius: 12,
+            marginBottom: 48,
+            backdropFilter: "blur(10px)"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 16 }}>
+             <div>
+               <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "2px", color: "#6366f1", marginBottom: 8 }}>PROGRESSION PATH</div>
+               <div style={{ fontSize: 24, fontWeight: 800 }}>Leveling Up to {gamification.level + 1}</div>
+             </div>
+             <div style={{ fontSize: 14, fontWeight: 800, color: "#6366f1" }}>{gamification.xp} / {gamification.next_level_xp} XP</div>
+          </div>
+          <div style={{ width: "100%", height: 8, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${gamification.progress}%` }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              style={{ height: "100%", background: "linear-gradient(90deg, #6366f1, #a855f7)", borderRadius: 4 }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Charts */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "40px", borderRadius: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+              <Activity size={18} color="#6366f1" />
+              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: "1px" }}>FOCUS SCORE TREND</div>
+            </div>
+            <div style={{ h: 300, width: "100%" }}>
+               <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={dailyData}>
+                    <XAxis dataKey="date" hide />
+                    <YAxis hide domain={[0, 100]} />
+                    <Tooltip contentStyle={{ background: "#0c0c0c", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }} />
+                    <Line type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={4} dot={{ r: 4, fill: "#6366f1" }} activeDot={{ r: 8, fill: "#fff" }} />
+                  </LineChart>
+               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="bg-surface border border-white/5 p-8 rounded-3xl shadow-xl">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              Activity Heatmap
-              <span className="text-sm font-medium text-white/40 block ml-auto">Hourly Distribution</span>
-            </h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={heatmapData}>
-                  <XAxis dataKey="hour" stroke="#ffffff40" fontSize={12} tickMargin={10} axisLine={false} tickLine={false} />
-                  <YAxis stroke="#ffffff40" fontSize={12} tickMargin={10} axisLine={false} tickLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1e1e1e', borderColor: '#ffffff1a', borderRadius: '12px' }}
-                    itemStyle={{ color: '#fff' }}
-                    cursor={{ fill: '#ffffff0a' }}
-                  />
-                  <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+          <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", padding: "40px", borderRadius: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+              <Target size={18} color="#22c55e" />
+              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: "1px" }}>HOURLY DISTRIBUTION</div>
+            </div>
+            <div style={{ h: 300, width: "100%" }}>
+               <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={heatmapData}>
+                    <XAxis dataKey="hour" hide />
+                    <YAxis hide />
+                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ background: "#0c0c0c", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }} />
+                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                      {heatmapData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#6366f1" : "#4f46e5"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+               </ResponsiveContainer>
             </div>
           </div>
         </div>
