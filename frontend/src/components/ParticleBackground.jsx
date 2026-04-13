@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export default function ParticleBackground() {
+export default function ParticleBackground({ color = 'rgba(99, 102, 241, 0.8)' }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function ParticleBackground() {
       }
 
       draw() {
-        ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
+        ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -81,7 +81,11 @@ export default function ParticleBackground() {
 
           if (distance < connectionDistance) {
             let opacity = 1 - (distance / connectionDistance);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${opacity * 0.2})`;
+            const baseColor = color.replace('0.8', '1').replace('0.3', '1'); // Rough normalization
+            ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.1})`; // Keep lines subtle white
+            if (color.includes('rgba')) {
+               ctx.strokeStyle = color.replace('0.8', (opacity * 0.2).toString());
+            }
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);

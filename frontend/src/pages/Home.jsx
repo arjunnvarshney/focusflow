@@ -77,6 +77,18 @@ export default function Home() {
 
   const [zenMode, setZenMode] = useState(false);
   const [mantra, setMantra] = useState("Stay sharp. Stay focused.");
+  const [theme, setTheme] = useState("NEON");
+  const [history, setHistory] = useState([
+    { id: 1, date: "12 Apr", time: "45m", score: 92 },
+    { id: 2, date: "11 Apr", time: "1h 20m", score: 88 },
+    { id: 3, date: "10 Apr", time: "30m", score: 95 }
+  ]);
+
+  const THEMES = {
+    NEON: { primary: "#6366f1", accent: "#a855f7", bg: "radial-gradient(circle at 50% 50%, #0d0d1a 0%, #050505 100%)" },
+    FOREST: { primary: "#10b981", accent: "#34d399", bg: "radial-gradient(circle at 50% 50%, #061a15 0%, #050505 100%)" },
+    SAKURA: { primary: "#fb7185", accent: "#fda4af", bg: "radial-gradient(circle at 50% 50%, #1a0d11 0%, #050505 100%)" }
+  };
 
   const timerRef = useRef(null);
   const idleRef = useRef(null);
@@ -214,28 +226,45 @@ export default function Home() {
 
   return (
     <div style={{
-      background: "#050505",
+      background: THEMES[theme].bg,
       height: "100vh",
       color: "#fff",
       fontFamily: "'DM Mono', monospace",
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
+      transition: "background 1s ease"
     }}>
-      <ParticleBackground />
+      <ParticleBackground color={THEMES[theme].primary} />
       {!zenMode && <Navbar />}
 
-      {/* Zen Mode Toggle */}
-      <div style={{ position: "fixed", top: 24, left: 24, zIndex: 1000, display: "flex", alignItems: "center", gap: 16 }}>
+      {/* Control Area: Zen & Themes */}
+      <div style={{ position: "fixed", top: 24, left: 24, zIndex: 1000, display: "flex", alignItems: "center", gap: 20 }}>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setZenMode(!zenMode)}
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", color: zenMode ? "#6366f1" : "rgba(255,255,255,0.4)", cursor: "pointer", backdropFilter: "blur(10px)" }}
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", color: zenMode ? THEMES[theme].primary : "rgba(255,255,255,0.4)", cursor: "pointer", backdropFilter: "blur(10px)" }}
         >
           {zenMode ? <Sparkles size={20} /> : <Zap size={20} />}
         </motion.button>
-        {zenMode && <div style={{ fontSize: 10, letterSpacing: "2px", fontWeight: 800, color: "rgba(255,255,255,0.2)" }}>ZEN MODE ACTIVE</div>}
+        
+        {!zenMode && (
+          <div style={{ display: "flex", gap: 8, background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.05)" }}>
+            {Object.keys(THEMES).map(t => (
+              <button 
+                key={t}
+                onClick={() => setTheme(t)}
+                style={{ 
+                  width: 12, height: 12, borderRadius: "50%", border: "none", cursor: "pointer",
+                  background: THEMES[t].primary,
+                  opacity: theme === t ? 1 : 0.3,
+                  transition: "opacity 0.3s"
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Main Body */}
@@ -286,7 +315,7 @@ export default function Home() {
                 position: "absolute",
                 top: "50%",
                 left: `calc(50% + ${p.x}px)`,
-                color: "#6366f1",
+                color: THEMES[theme].primary,
                 fontWeight: 800,
                 fontSize: 24,
                 pointerEvents: "none"
@@ -311,7 +340,7 @@ export default function Home() {
 
           <div style={{ display: "flex", gap: 64, marginBottom: 64 }}>
             {[
-              { label: "QUALITY", value: isRunning ? `${focusScore}%` : "—", color: focusScore < 60 ? "#ef4444" : "#6366f1", icon: <Zap size={16} /> },
+              { label: "QUALITY", value: isRunning ? `${focusScore}%` : "—", color: focusScore < 60 ? "#ef4444" : THEMES[theme].primary, icon: <Zap size={16} /> },
               { label: "DISTRACTIONS", value: isRunning ? `${distractions}` : "—", color: distractions > 2 ? "#f59e0b" : "#fff", icon: <Keyboard size={16} /> },
             ].map((s) => (
               <div key={s.label}>
@@ -323,10 +352,10 @@ export default function Home() {
 
           <div style={{ display: "flex", gap: 20 }}>
             <motion.button
-              whileHover={{ scale: 1.02, backgroundColor: isRunning ? "rgba(239,68,68,0.1)" : "#4f46e5" }}
+              whileHover={{ scale: 1.02, backgroundColor: isRunning ? "rgba(239,68,68,0.1)" : THEMES[theme].accent }}
               whileTap={{ scale: 0.98 }}
               onClick={isRunning ? endSession : startSession}
-              style={{ background: isRunning ? "transparent" : "#6366f1", color: isRunning ? "#ef4444" : "#fff", border: isRunning ? "1px solid rgba(239,68,68,0.3)" : "none", padding: "20px 56px", borderRadius: 4, fontSize: 14, fontWeight: 700, letterSpacing: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: 16 }}
+              style={{ background: isRunning ? "transparent" : THEMES[theme].primary, color: isRunning ? "#ef4444" : "#fff", border: isRunning ? "1px solid rgba(239,68,68,0.3)" : "none", padding: "20px 56px", borderRadius: 4, fontSize: 14, fontWeight: 700, letterSpacing: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: 16 }}
             >
               {isRunning ? <Square size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
               {isRunning ? "DEACTIVATE" : "INITIATE FOCUS"}
@@ -355,14 +384,14 @@ export default function Home() {
                   <motion.button 
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setSoundEnabled(!soundEnabled)}
-                    style={{ background: "none", border: "none", color: soundEnabled ? "#6366f1" : "rgba(255,255,255,0.2)", cursor: "pointer" }}
+                    style={{ background: "none", border: "none", color: soundEnabled ? THEMES[theme].primary : "rgba(255,255,255,0.2)", cursor: "pointer" }}
                   >
                     {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
                   </motion.button>
                   {soundEnabled && (
                     <div style={{ display: "flex", gap: 8 }}>
                       {["LOFI", "RAIN", "JAZZ"].map(s => (
-                        <span key={s} onClick={() => setSoundType(s)} style={{ fontSize: 10, fontWeight: 800, letterSpacing: "1px", color: soundType === s ? "#fff" : "rgba(255,255,255,0.2)", cursor: "pointer", padding: "4px 8px", background: soundType === s ? "rgba(99,102,241,0.1)" : "transparent", borderRadius: 4 }}>{s}</span>
+                        <span key={s} onClick={() => setSoundType(s)} style={{ fontSize: 10, fontWeight: 800, letterSpacing: "1px", color: soundType === s ? "#fff" : "rgba(255,255,255,0.2)", cursor: "pointer", padding: "4px 8px", background: soundType === s ? `${THEMES[theme].primary}22` : "transparent", borderRadius: 4 }}>{s}</span>
                       ))}
                     </div>
                   )}
@@ -384,7 +413,7 @@ export default function Home() {
                     placeholder="Next objective... (Alt+T)"
                     style={{ flex: 1, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 4, padding: "16px 20px", fontSize: 14, color: "#fff", outline: "none" }}
                   />
-                  <button onClick={addTask} style={{ background: "#6366f1", border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer" }}><Plus size={20} /></button>
+                  <button onClick={addTask} style={{ background: THEMES[theme].primary, border: "none", borderRadius: 4, width: 52, color: "#fff", cursor: "pointer" }}><Plus size={20} /></button>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -399,11 +428,27 @@ export default function Home() {
                         onClick={() => toggleTask(t.id)}
                         style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: t.done ? "transparent" : "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: 6, cursor: "pointer" }}
                       >
-                        <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? "#6366f1" : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
+                        <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? THEMES[theme].primary : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
                         <span style={{ fontSize: 14, fontWeight: 500, color: t.done ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)", flex: 1, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
                       </motion.div>
                     ))}
                   </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Session History (Cognitive Audit) */}
+              <div style={{ padding: "32px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "2.5px", color: "rgba(255,255,255,0.2)", marginBottom: 20 }}>COGNITIVE AUDIT</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {history.map(h => (
+                    <div key={h.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.6)" }}>{h.date} — {h.time}</div>
+                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: "1px" }}>SESSION PERFORMANCE</div>
+                      </div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: THEMES[theme].primary }}>{h.score}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
