@@ -36,6 +36,45 @@ export default function Home() {
   const [soundType, setSoundType] = useState("LOFI");
   const [xpPopups, setXpPopups] = useState([]);
 
+  const audioRef = useRef(null);
+
+  const SOUND_URLS = {
+    LOFI: "https://stream.zeno.fm/0r0xa792kw9uv", // Lofi Radio stream or similar static MP3
+    RAIN: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", // Demo rain-like
+    JAZZ: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3" // Demo jazz-like
+  };
+
+  // Audio Management
+  useEffect(() => {
+    if (soundEnabled) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio(SOUND_URLS[soundType]);
+        audioRef.current.loop = true;
+        audioRef.current.volume = 0.4;
+      } else {
+        audioRef.current.src = SOUND_URLS[soundType];
+      }
+      
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Audio playback failed:", error);
+          setSoundEnabled(false);
+        });
+      }
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [soundEnabled, soundType]);
+
   const timerRef = useRef(null);
   const idleRef = useRef(null);
   const inputRef = useRef(null);
