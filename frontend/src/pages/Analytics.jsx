@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import ParticleBackground from '../components/ParticleBackground';
 import { Flame, Clock, Trophy, Zap, Activity, Target } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function Analytics() {
   const [dailyData, setDailyData] = useState([]);

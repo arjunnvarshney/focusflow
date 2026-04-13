@@ -4,6 +4,8 @@ import { Play, Square, Check, Plus, Volume2, VolumeX, Zap, Clock, Keyboard, Spar
 import Navbar from "../components/Navbar";
 import ParticleBackground from "../components/ParticleBackground";
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const STATES = {
   IDLE: "IDLE",
   ACTIVE: "ACTIVE",
@@ -137,7 +139,7 @@ export default function Home() {
     const label = now.toLocaleTimeString("en-US", { hour12: false });
     setEvents((prev) => [{ type, time: label }, ...prev].slice(0, 8));
     if (sessionId) {
-      fetch(`http://localhost:8000/sessions/event`, {
+      fetch(`${BASE_URL}/sessions/event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionId, event_type: type }),
@@ -168,7 +170,7 @@ export default function Home() {
   // Session Controls
   const startSession = async () => {
     try {
-      const res = await fetch("http://localhost:8000/sessions/start", { method: "POST" });
+      const res = await fetch(`${BASE_URL}/sessions/start`, { method: "POST" });
       const data = await res.json();
       setSessionId(data.id);
     } catch {}
