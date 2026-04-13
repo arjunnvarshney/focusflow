@@ -211,10 +211,14 @@ export default function Home() {
     setTasks((t) => {
       const target = t.find(tk => tk.id === id);
       if (target && !target.done) {
-        // XP POPUP
-        const newPopup = { id: Date.now(), x: Math.random() * 100 - 50, y: Math.random() * 50 };
+        // XP POPUP - Randomized Fountain Path
+        const newPopup = { 
+          id: Date.now(), 
+          x: Math.random() * 200 - 100, 
+          rot: Math.random() * 40 - 20 
+        };
         setXpPopups(prev => [...prev, newPopup]);
-        setTimeout(() => setXpPopups(prev => prev.filter(p => p.id !== newPopup.id)), 1000);
+        setTimeout(() => setXpPopups(prev => prev.filter(p => p.id !== newPopup.id)), 1200);
       }
       return t.map((tk) => tk.id === id ? { ...tk, done: !tk.done } : tk);
     });
@@ -304,22 +308,30 @@ export default function Home() {
           >
             — {mantra}
           </motion.div>
-          {/* XP Popups */}
+          {/* XP Popups - Fountain Effect in Bottom Right */}
           {xpPopups.map(p => (
             <motion.div
               key={p.id}
-              initial={{ opacity: 0, scale: 0.5, y: 0 }}
-              animate={{ opacity: 1, scale: 1, y: -120 }}
+              initial={{ opacity: 0, scale: 0, y: 0, x: 0 }}
+              animate={{ 
+                opacity: [0, 1, 1, 0], 
+                scale: [0.5, 1, 1, 0.8], 
+                y: -150, 
+                x: p.x, 
+                rotate: p.rot 
+              }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
               style={{
-                position: "absolute",
-                top: "75%",
-                left: `calc(50% + ${p.x}px)`,
+                position: "fixed",
+                bottom: 100,
+                right: 100,
                 color: THEMES[theme].primary,
                 fontWeight: 900,
-                fontSize: 28,
+                fontSize: 32,
                 pointerEvents: "none",
-                textShadow: `0 0 20px ${THEMES[theme].primary}aa`,
-                zIndex: 100
+                textShadow: `0 0 30px ${THEMES[theme].primary}88`,
+                zIndex: 2000,
+                fontFamily: "'DM Mono', monospace"
               }}
             >+20 XP</motion.div>
           ))}
