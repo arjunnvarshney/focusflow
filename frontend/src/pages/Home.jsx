@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Square, Check, Plus, Volume2, VolumeX, Zap, Clock, Keyboard, Sparkles } from "lucide-react";
+import { Play, Square, Check, Plus, Volume2, VolumeX, Zap, Clock, Keyboard, Sparkles, Flame, Wand2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import ParticleBackground from "../components/ParticleBackground";
 
@@ -84,10 +84,33 @@ export default function Home() {
     { id: 3, date: "10 Apr", time: "30m", score: 95 }
   ]);
 
+  const [streak, setStreak] = useState(12);
+
   const THEMES = {
     NEON: { primary: "#6366f1", accent: "#a855f7", bg: "radial-gradient(circle at 50% 50%, #0d0d1a 0%, #050505 100%)" },
     FOREST: { primary: "#10b981", accent: "#34d399", bg: "radial-gradient(circle at 50% 50%, #061a15 0%, #050505 100%)" },
     SAKURA: { primary: "#fb7185", accent: "#fda4af", bg: "radial-gradient(circle at 50% 50%, #1a0d11 0%, #050505 100%)" }
+  };
+
+  const startRitual = () => {
+    setTheme("FOREST");
+    setSoundEnabled(true);
+    setSoundType("RAIN");
+    setZenMode(true);
+    startSession();
+  };
+
+  const breakTask = (id) => {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === id);
+      if (!task) return prev;
+      const subs = [
+        { id: Date.now() + 1, text: `→ Plan: ${task.text.split(' ')[0]} specifics`, done: false },
+        { id: Date.now() + 2, text: `→ Execute core logic`, done: false },
+        { id: Date.now() + 3, text: `→ Review and polish`, done: false }
+      ];
+      return prev.flatMap(t => t.id === id ? [t, ...subs] : t);
+    });
   };
 
   const timerRef = useRef(null);
@@ -254,19 +277,29 @@ export default function Home() {
         </motion.button>
         
         {!zenMode && (
-          <div style={{ display: "flex", gap: 8, background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.05)" }}>
-            {Object.keys(THEMES).map(t => (
-              <button 
-                key={t}
-                onClick={() => setTheme(t)}
-                style={{ 
-                  width: 12, height: 12, borderRadius: "50%", border: "none", cursor: "pointer",
-                  background: THEMES[t].primary,
-                  opacity: theme === t ? 1 : 0.3,
-                  transition: "opacity 0.3s"
-                }}
-              />
-            ))}
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, background: "rgba(0,0,0,0.2)", padding: "4px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.05)" }}>
+              {Object.keys(THEMES).map(t => (
+                <button 
+                  key={t}
+                  onClick={() => setTheme(t)}
+                  style={{ 
+                    width: 12, height: 12, borderRadius: "50%", border: "none", cursor: "pointer",
+                    background: THEMES[t].primary,
+                    opacity: theme === t ? 1 : 0.3,
+                    transition: "opacity 0.3s"
+                  }}
+                />
+              ))}
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05, background: "rgba(255,255,255,0.1)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={startRitual}
+              style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "8px 16px", fontSize: 10, fontWeight: 800, color: THEMES[theme].primary, cursor: "pointer", letterSpacing: "1px" }}
+            >
+              FOCUS RITUAL
+            </motion.button>
           </div>
         )}
       </div>
@@ -291,6 +324,28 @@ export default function Home() {
           position: "relative",
           transition: "padding 0.6s cubic-bezier(0.16, 1, 0.3, 1)"
         }}>
+          {/* Streak Burner */}
+          {!zenMode && (
+            <motion.div 
+              style={{ position: "absolute", top: 40, right: 40, textAlign: "right", display: "flex", alignItems: "center", gap: 12 }}
+            >
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "2px", color: "rgba(255,255,255,0.2)" }}>STREAK</div>
+                <div style={{ fontSize: 24, fontWeight: 900, color: "#fff" }}>{streak}</div>
+              </div>
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  filter: ["drop-shadow(0 0 5px #f97316)", "drop-shadow(0 0 15px #f97316)", "drop-shadow(0 0 5px #f97316)"]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ color: "#f97316" }}
+              >
+                <Flame size={32} />
+              </motion.div>
+            </motion.div>
+          )}
+
           {/* AI Focus Coach Mantra */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -439,10 +494,20 @@ export default function Home() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         onClick={() => toggleTask(t.id)}
-                        style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: t.done ? "transparent" : "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: 6, cursor: "pointer" }}
+                        style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 20px", background: t.done ? "transparent" : "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", borderRadius: 6, cursor: "pointer", position: "relative" }}
                       >
                         <div style={{ width: 20, height: 20, borderRadius: "50%", border: t.done ? "none" : "2px solid rgba(255,255,255,0.15)", background: t.done ? THEMES[theme].primary : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{t.done && <Check size={12} strokeWidth={4} />}</div>
                         <span style={{ fontSize: 14, fontWeight: 500, color: t.done ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.7)", flex: 1, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
+                        {!t.done && (
+                          <motion.button
+                            whileHover={{ scale: 1.2, color: THEMES[theme].primary }}
+                            onClick={(e) => { e.stopPropagation(); breakTask(t.id); }}
+                            style={{ background: "none", border: "none", color: "rgba(255,255,255,0.1)", cursor: "pointer", display: "flex", alignItems: "center", padding: 4 }}
+                            title="AI Break Down"
+                          >
+                            <Wand2 size={16} />
+                          </motion.button>
+                        )}
                       </motion.div>
                     ))}
                   </AnimatePresence>
