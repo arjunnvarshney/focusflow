@@ -39,9 +39,9 @@ export default function Home() {
   const audioRef = useRef(null);
 
   const SOUND_URLS = {
-    LOFI: "https://archive.org/download/lofi-hip-hop-radio-24-7-chill-gaming-study-beats-no-copyright-lofi-hip-hop-radio-no-copyright/Lofi%20Hip%20Hop%20Radio%20%2824_7%20Chill%20Gaming_Study%20Beats%29%20%5BNo%20Copyright%5D%20-%20Lofi%20Hip%20Hop%20Radio%20%5BNo%20Copyright%5D.mp3",
-    RAIN: "https://archive.org/download/NatureSoundsRelaxingRainSmall/Relaxing-Rain-Small-1.mp3",
-    JAZZ: "https://archive.org/download/coffee-shop-jazz-music-ambience-jazzy-lofi-hip-hop-mix-jazz-radio-24-7/Coffee%20Shop%20Jazz%20Music%20Ambience%20-%20Jazzy%20Lofi%20Hip%20Hop%20Mix%20-%20Jazz%20Radio%2024_7.mp3"
+    LOFI: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3",
+    RAIN: "https://www.soundjay.com/nature/rain-07.mp3",
+    JAZZ: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"
   };
 
   // Audio Management
